@@ -3,7 +3,7 @@ class Spree::CommentsController < Spree::BaseController
     comment = spree_current_user.comments.build(comment_params)
     if comment.save
       redirect_to :back
-      expire_fragment [I18n.locale, current_currency, @product]
+      expire_fragment [I18n.locale, Spree::Config[:currency], @product]
     end
   end
 
