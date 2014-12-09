@@ -1,3 +1,4 @@
+<% expire_fragment( [I18n.locale, current_currency, @product]) %>
 <%- if @comments.present? %>
   <%- @comments.each do |c| %>
         User : <%= c.user.email%>
