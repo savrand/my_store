@@ -1,0 +1,15 @@
+<%- if @comments.present? %>
+  <%- @comments.each do |c| %>
+        User : <%= c.user.email%>
+        <br>
+        Message: <%= c.message %>
+        <br/>
+  <% end %>
+<% end %>
+<% if can? :create, @comment %>
+    <%= form_for [@product, @comment] do |f| %>
+        <%= f.label :message %>
+        <%= f.text_field :message %>
+        <%= f.submit %>
+    <% end %>
+<% end %>

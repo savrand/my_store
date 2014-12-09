@@ -1,0 +1,10 @@
+development:
+  adapter: postgresql
+  pool: 10
+  encoding: unicode
+  database: interior_development
+  username: postgres
+  password: root
+  host: localhost
+  port: 5433
+  timeout: 5000
