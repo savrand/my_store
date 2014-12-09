@@ -2,8 +2,9 @@ class Spree::CommentsController < Spree::BaseController
   def create
     comment = spree_current_user.comments.build(comment_params)
     if comment.save
-      @product.touch
+      #@product.touch
       redirect_to :back
+      expire_fragment [I18n.locale, Spree::Config[:currency], @product, "spree/overrides/frontend/product_comments"]
     end
   end
 
