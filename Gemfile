@@ -5,6 +5,11 @@ gem 'rails', '4.1.8'
 gem 'spree', github: 'spree/spree', branch: '2-4-stable'
 gem 'spree_auth_devise', github: 'spree/spree_auth_devise', branch: '2-4-stable'
 gem 'spree_reviews', github: 'spree-contrib/spree_reviews', branch: '2-4-stable'
+group :development, :test do
+  gem 'capybara'
+  gem 'factory_girl'
+  gem 'rspec-rails', '~> 3.0'
+end
 
 # Use sqlite3 as the database for Active Record
 gem 'pg'
