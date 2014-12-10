@@ -2,7 +2,6 @@ class Spree::CommentsController < Spree::BaseController
   def create
     comment = spree_current_user.comments.build(comment_params)
     if comment.save
-      #@product.touch
       redirect_to :back
     end
   end
