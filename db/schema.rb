@@ -11,108 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141209124435) do
+ActiveRecord::Schema.define(version: 20141210103029) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "fuzzystrmatch"
-  enable_extension "hstore"
-  enable_extension "pg_trgm"
-
-  create_table "accounts", force: true do |t|
-    t.string  "email"
-    t.string  "encrypted_password", limit: 128
-    t.string  "confirmation_token", limit: 128
-    t.string  "remember_token",     limit: 128,                 null: false
-    t.string  "name"
-    t.boolean "admin",                          default: false
-    t.string  "state"
-  end
-
-  add_index "accounts", ["email"], name: "index_accounts_on_email", unique: true, using: :btree
-  add_index "accounts", ["remember_token"], name: "index_accounts_on_remember_token", using: :btree
-
-  create_table "authentications", force: true do |t|
-    t.integer "account_id"
-    t.string  "provider"
-    t.string  "uid"
-  end
-
-  add_index "authentications", ["account_id", "provider", "uid"], name: "index_authentications_on_account_id_and_provider_and_uid", unique: true, using: :btree
-  add_index "authentications", ["provider", "uid"], name: "index_authentications_on_provider_and_uid", unique: true, using: :btree
-
-  create_table "brands", force: true do |t|
-    t.string "name"
-  end
-
-  create_table "categories", force: true do |t|
-    t.integer "parent_id"
-    t.integer "lft"
-    t.integer "rgt"
-    t.integer "depth"
-    t.string  "name"
-    t.integer "property_ids", array: true
-  end
-
-  create_table "currency_prices", force: true do |t|
-    t.decimal  "price"
-    t.integer  "exchange_rate_id"
-    t.integer  "product_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "designer_pictures", force: true do |t|
-    t.string   "image_file_name"
-    t.string   "image_content_type"
-    t.integer  "image_file_size"
-    t.datetime "image_updated_at"
-    t.text     "image_meta"
-  end
-
-  create_table "designers", force: true do |t|
-    t.integer  "account_id"
-    t.string   "facebook"
-    t.string   "behance"
-    t.text     "about"
-    t.datetime "pro_till"
-    t.integer  "avatar_id"
-    t.string   "phone"
-    t.datetime "created_at"
-  end
-
-  add_index "designers", ["account_id"], name: "index_designers_on_account_id", unique: true, using: :btree
-
-  create_table "elements", force: true do |t|
-    t.integer "product_id"
-    t.integer "room_id"
-    t.integer "quantity",   default: 1
-    t.integer "place_id"
-  end
-
-  add_index "elements", ["place_id"], name: "index_elements_on_place_id", using: :btree
-  add_index "elements", ["product_id", "room_id"], name: "index_elements_on_product_id_and_room_id", unique: true, using: :btree
-  add_index "elements", ["product_id"], name: "index_elements_on_product_id", using: :btree
-  add_index "elements", ["room_id", "product_id"], name: "index_elements_on_room_id_and_product_id", unique: true, using: :btree
-  add_index "elements", ["room_id"], name: "index_elements_on_room_id", using: :btree
-
-  create_table "exchange_rates", force: true do |t|
-    t.string   "currency_name"
-    t.string   "currency_short"
-    t.integer  "nominal"
-    t.string   "r_code"
-    t.float    "rate"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "favorites", force: true do |t|
-    t.integer "product_id"
-    t.integer "designer_id"
-  end
-
-  add_index "favorites", ["designer_id"], name: "index_favorites_on_designer_id", using: :btree
-  add_index "favorites", ["product_id", "designer_id"], name: "index_favorites_on_product_id_and_designer_id", unique: true, using: :btree
 
   create_table "friendly_id_slugs", force: true do |t|
     t.string   "slug",                      null: false
@@ -126,153 +28,6 @@ ActiveRecord::Schema.define(version: 20141209124435) do
   add_index "friendly_id_slugs", ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type", using: :btree
   add_index "friendly_id_slugs", ["sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_id", using: :btree
   add_index "friendly_id_slugs", ["sluggable_type"], name: "index_friendly_id_slugs_on_sluggable_type", using: :btree
-
-  create_table "orders", force: true do |t|
-    t.integer  "supplier_id"
-    t.integer  "place_id"
-    t.string   "state"
-    t.hstore   "products"
-    t.integer  "room_id"
-    t.string   "token"
-    t.datetime "created_at"
-    t.string   "name"
-    t.string   "phone"
-    t.text     "address"
-    t.text     "comment"
-    t.integer  "account_id"
-  end
-
-  add_index "orders", ["token"], name: "index_orders_on_token", using: :btree
-
-  create_table "payments", force: true do |t|
-    t.integer  "subscription_id"
-    t.integer  "designer_id"
-    t.string   "state"
-    t.datetime "created_at"
-  end
-
-  create_table "pg_search_documents", force: true do |t|
-    t.text     "content"
-    t.integer  "searchable_id"
-    t.string   "searchable_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "places", force: true do |t|
-    t.integer "supplier_id"
-    t.string  "name"
-    t.text    "address"
-  end
-
-  add_index "places", ["supplier_id"], name: "index_places_on_supplier_id", using: :btree
-
-  create_table "product_alpha_pictures", force: true do |t|
-    t.integer  "product_id"
-    t.string   "image_file_name"
-    t.string   "image_content_type"
-    t.integer  "image_file_size"
-    t.datetime "image_updated_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "product_alpha_pictures", ["product_id"], name: "index_product_alpha_pictures_on_product_id", using: :btree
-
-  create_table "product_pictures", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "image_file_name"
-    t.string   "image_content_type"
-    t.integer  "image_file_size"
-    t.datetime "image_updated_at"
-    t.text     "image_meta"
-    t.text     "original_url"
-  end
-
-  create_table "products", force: true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.integer  "category_id"
-    t.float    "width"
-    t.float    "depth"
-    t.float    "height"
-    t.integer  "supplier_id"
-    t.string   "article"
-    t.decimal  "price"
-    t.integer  "main_picture_id"
-    t.integer  "additional_picture_ids",                     array: true
-    t.integer  "brand_id"
-    t.string   "state"
-    t.integer  "designer_id"
-    t.integer  "weight"
-    t.hstore   "properties"
-    t.string   "attributes_hash"
-    t.boolean  "default",                     default: true
-    t.datetime "created_at"
-    t.text     "notice"
-    t.integer  "main_picture_transparent_id"
-    t.string   "code"
-    t.integer  "external_id"
-  end
-
-  add_index "products", ["attributes_hash"], name: "index_products_on_attributes_hash", using: :btree
-  add_index "products", ["brand_id"], name: "index_products_on_brand_id", using: :btree
-  add_index "products", ["category_id", "state"], name: "index_products_on_category_id_and_state", using: :btree
-  add_index "products", ["category_id"], name: "index_products_on_category_id", using: :btree
-  add_index "products", ["designer_id"], name: "index_products_on_designer_id", using: :btree
-  add_index "products", ["state"], name: "index_products_on_state", using: :btree
-  add_index "products", ["supplier_id"], name: "index_products_on_supplier_id", using: :btree
-
-  create_table "projects", force: true do |t|
-    t.integer  "designer_id"
-    t.string   "name"
-    t.text     "address"
-    t.string   "color",       default: "orange"
-    t.datetime "created_at"
-  end
-
-  add_index "projects", ["designer_id"], name: "index_projects_on_designer_id", using: :btree
-
-  create_table "properties", force: true do |t|
-    t.string  "kind"
-    t.string  "name"
-    t.integer "weight", default: 0
-  end
-
-  create_table "room_pictures", force: true do |t|
-    t.string   "image_file_name"
-    t.string   "image_content_type"
-    t.integer  "image_file_size"
-    t.datetime "image_updated_at"
-    t.text     "image_meta"
-  end
-
-  create_table "rooms", force: true do |t|
-    t.integer  "project_id"
-    t.string   "name"
-    t.string   "session_id"
-    t.datetime "updated_at"
-    t.string   "tag"
-    t.integer  "designer_id"
-    t.string   "state"
-    t.boolean  "on_main",                     default: false
-    t.text     "description"
-    t.integer  "preview_id"
-    t.integer  "selected_supplier_place_ids",                 array: true
-    t.json     "collage"
-    t.datetime "created_at"
-    t.string   "token"
-    t.hstore   "bonus_values"
-    t.boolean  "custom_preview",              default: false
-  end
-
-  add_index "rooms", ["designer_id"], name: "index_rooms_on_designer_id", using: :btree
-  add_index "rooms", ["id", "session_id"], name: "index_rooms_on_id_and_session_id", using: :btree
-  add_index "rooms", ["project_id"], name: "index_rooms_on_project_id", using: :btree
-  add_index "rooms", ["state", "on_main"], name: "index_rooms_on_state_and_on_main", using: :btree
-  add_index "rooms", ["state"], name: "index_rooms_on_state", using: :btree
-  add_index "rooms", ["token"], name: "index_rooms_on_token", unique: true, using: :btree
 
   create_table "spree_addresses", force: true do |t|
     t.string   "firstname"
@@ -402,6 +157,19 @@ ActiveRecord::Schema.define(version: 20141209124435) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "spree_feedback_reviews", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "review_id",                 null: false
+    t.integer  "rating",     default: 0
+    t.text     "comment"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "locale",     default: "en"
+  end
+
+  add_index "spree_feedback_reviews", ["review_id"], name: "index_spree_feedback_reviews_on_review_id", using: :btree
+  add_index "spree_feedback_reviews", ["user_id"], name: "index_spree_feedback_reviews_on_user_id", using: :btree
 
   create_table "spree_gateways", force: true do |t|
     t.string   "type"
@@ -649,7 +417,7 @@ ActiveRecord::Schema.define(version: 20141209124435) do
   add_index "spree_product_properties", ["property_id"], name: "index_spree_product_properties_on_property_id", using: :btree
 
   create_table "spree_products", force: true do |t|
-    t.string   "name",                 default: "",   null: false
+    t.string   "name",                                         default: "",   null: false
     t.text     "description"
     t.datetime "available_on"
     t.datetime "deleted_at"
@@ -660,8 +428,10 @@ ActiveRecord::Schema.define(version: 20141209124435) do
     t.integer  "shipping_category_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "promotionable",        default: true
+    t.boolean  "promotionable",                                default: true
     t.string   "meta_title"
+    t.decimal  "avg_rating",           precision: 7, scale: 5, default: 0.0,  null: false
+    t.integer  "reviews_count",                                default: 0,    null: false
   end
 
   add_index "spree_products", ["available_on"], name: "index_spree_products_on_available_on", using: :btree
@@ -873,6 +643,24 @@ ActiveRecord::Schema.define(version: 20141209124435) do
 
   add_index "spree_return_items", ["customer_return_id"], name: "index_return_items_on_customer_return_id", using: :btree
   add_index "spree_return_items", ["exchange_inventory_unit_id"], name: "index_spree_return_items_on_exchange_inventory_unit_id", using: :btree
+
+  create_table "spree_reviews", force: true do |t|
+    t.integer  "product_id"
+    t.string   "name"
+    t.string   "location"
+    t.integer  "rating"
+    t.text     "title"
+    t.text     "review"
+    t.boolean  "approved",        default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "user_id"
+    t.string   "ip_address"
+    t.string   "locale",          default: "en"
+    t.boolean  "show_identifier", default: true
+  end
+
+  add_index "spree_reviews", ["show_identifier"], name: "index_spree_reviews_on_show_identifier", using: :btree
 
   create_table "spree_roles", force: true do |t|
     t.string "name"
@@ -1251,45 +1039,5 @@ ActiveRecord::Schema.define(version: 20141209124435) do
   end
 
   add_index "spree_zones", ["default_tax"], name: "index_spree_zones_on_default_tax", using: :btree
-
-  create_table "subscriptions", force: true do |t|
-    t.string  "name"
-    t.decimal "price"
-    t.integer "days"
-  end
-
-  create_table "supplier_covers", force: true do |t|
-    t.string   "image_file_name"
-    t.string   "image_content_type"
-    t.integer  "image_file_size"
-    t.datetime "image_updated_at"
-    t.text     "image_meta"
-  end
-
-  create_table "supplier_logos", force: true do |t|
-    t.string   "image_file_name"
-    t.string   "image_content_type"
-    t.integer  "image_file_size"
-    t.datetime "image_updated_at"
-    t.text     "image_meta"
-  end
-
-  create_table "suppliers", force: true do |t|
-    t.integer "account_id"
-    t.string  "name"
-    t.hstore  "properties"
-    t.integer "brand_ids",                       array: true
-    t.string  "state"
-    t.string  "orders_email"
-    t.boolean "accepts_orders",  default: false
-    t.string  "contract_number"
-    t.string  "short_info"
-    t.string  "phones"
-    t.string  "legal_address"
-    t.integer "logo_id"
-    t.integer "cover_id"
-  end
-
-  add_index "suppliers", ["account_id"], name: "index_suppliers_on_account_id", unique: true, using: :btree
 
 end
